@@ -361,10 +361,8 @@ static void get_privsep_data(const RSA *rsa, struct st_neverbleed_rsa_exdata_t *
                              struct st_neverbleed_thread_data_t **thdata)
 {
     *exdata = RSA_get_ex_data(rsa, 0);
-    if (*exdata == NULL) {
-        errno = 0;
-        dief("invalid internal ref");
-    }
+    if (*exdata == NULL)
+        return;
     *thdata = get_thread_data((*exdata)->nb);
 }
 
@@ -775,10 +773,8 @@ static void ecdsa_get_privsep_data(const EC_KEY *ec_key, struct st_neverbleed_rs
                                    struct st_neverbleed_thread_data_t **thdata)
 {
     *exdata = EC_KEY_get_ex_data(ec_key, 0);
-    if (*exdata == NULL) {
-        errno = 0;
-        dief("invalid internal ref");
-    }
+    if (*exdata == NULL)
+        return;
     *thdata = get_thread_data((*exdata)->nb);
 }
 
@@ -878,6 +874,8 @@ static void priv_ecdsa_finish(EC_KEY *key)
     struct st_neverbleed_thread_data_t *thdata;
 
     ecdsa_get_privsep_data(key, &exdata, &thdata);
+    if (exdata == NULL)
+        return;
 
     struct expbuf_t buf = {NULL};
     size_t ret;
@@ -1214,6 +1212,8 @@ static int priv_rsa_finish(RSA *rsa)
     struct st_neverbleed_thread_data_t *thdata;
 
     get_privsep_data(rsa, &exdata, &thdata);
+    if (exdata == NULL)
+        return 1;
 
     struct expbuf_t buf = {NULL};
     size_t ret;
