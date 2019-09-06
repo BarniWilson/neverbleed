@@ -1430,6 +1430,8 @@ int neverbleed_init(neverbleed_t *nb, char *errbuf)
     const RSA_METHOD *default_method = RSA_PKCS1_SSLeay();
     RSA_METHOD *rsa_method = &static_rsa_method;
 
+    rsa_finish = default_method->finish;
+
     rsa_method->rsa_pub_enc = default_method->rsa_pub_enc;
     rsa_method->rsa_pub_dec = default_method->rsa_pub_dec;
     rsa_method->rsa_verify = default_method->rsa_verify;
